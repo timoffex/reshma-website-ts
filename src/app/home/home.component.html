@@ -1,0 +1,13 @@
+<div *ngIf="selectedItem$ | async" class="detail-container">
+    <img class="detail-container--image" src="assets/stump.jpg" />
+</div>
+<div *ngIf="!(selectedItem$ | async)" class="item-group">
+    <ng-container *ngFor="let row of [1, 2, 3]">
+        <ng-container *ngFor="let col of [1, 2, 3]">
+            <div class="item grid-cell-{{row}}-{{col}}" [@flipToDetail]="this.flipData(row, col)"
+                (click)="this.selectItemAt(row, col)">
+                <img src="assets/stump_gallery.jpg" />
+            </div>
+        </ng-container>
+    </ng-container>
+</div>

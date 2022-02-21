@@ -1,0 +1,47 @@
+:host {
+    width: 100vw;
+    height: 100vh;
+}
+
+.item-group {
+    // Center the div
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    width: 100vmin;
+    height: 100vmin;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    justify-content: center;
+    gap: 1px;
+}
+
+.item {
+    border-radius: 15px;
+    overflow: hidden;
+
+    img {
+        width: 100%;
+        height: 100%;
+        transition: transform 300ms ease-in-out;
+    }
+
+    &:hover {
+        img {
+            transform: scale(1.5);
+        }
+    }
+}
+
+@for $row from 1 through 3 {
+    @for $col from 1 through 3 {
+        .grid-cell-#{$row}-#{$col} {
+            grid-row: $row;
+            grid-column: $col;
+        }
+    }
+}

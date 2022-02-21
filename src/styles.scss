@@ -1,1 +1,8 @@
-/* You can add global styles to this file, and also import other style files */
+html {
+  background: linear-gradient(45deg, #009883, #a4ffa4, #d09fff) fixed;
+}
+
+html, body {
+  // Some browsers (like Chrome) set a default margin of 8px which messes up viewport units for "full viewport" apps
+  margin: 0;
+}
