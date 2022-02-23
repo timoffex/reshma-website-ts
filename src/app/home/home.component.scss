@@ -1,15 +1,44 @@
 .root {
-    width: 90vw;
-    height: 90vh;
+    width: var(--square-size);
+    height: var(--square-size);
 
     position: relative;
 
-    margin: 5vh 5vw;
+    margin: calc((100vh - var(--square-size)) / 2)
+            calc((100vw - var(--square-size)) / 2);
+
+    // Size of the square used for the grid and for the detail view
+    --square-size: 160px;
+
+    // The size of a grid item, which is an integer number of pixels
+    --grid-item-size: calc((var(--square-size) - var(--grid-padding-end))/3);
+
+    // The extra size to add to the grid elements at the right and bottom of the grid
+    // so that it perfectly overlaps the detail container
+    --grid-padding-end: 1px;
+
+    @media screen and (min-width: 330px) and (min-height: 330px) {
+        --square-size: 320px;
+        // Subtract 2 to get 318, which is a multiple of 3
+        --grid-padding-end: 2px;
+    }
+
+    @media screen and (min-width: 500px) and (min-height: 500px) {
+        --square-size: 480px;
+        // This is already a multiple of 3, no need to set grid padding
+        --grid-padding-end: 0px;
+    }
+
+    @media screen and (min-width: 650px) and (min-height: 650px) {
+        --square-size: 640px;
+        // Subtract 1 to get 639, which is a multiple of 3
+        --grid-padding-end: 1px;
+    }
 }
 
 .detail-container {
-    width: 90vmin;
-    height: 90vmin;
+    width: var(--square-size);
+    height: var(--square-size);
     > img {
         width: 100%;
         height: 100%;
@@ -25,15 +54,20 @@
 }
 
 .item-group {
-    // Fit the grid to the viewport
-    width: 90vmin;
-    height: 90vmin;
+    width: var(--square-size);
+    height: var(--square-size);
 
     perspective: 1000px;
 
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-columns:
+        var(--grid-item-size)
+        var(--grid-item-size)
+        calc(var(--grid-item-size) + var(--grid-padding-end));
+    grid-template-rows:
+        var(--grid-item-size)
+        var(--grid-item-size)
+        calc(var(--grid-item-size) + var(--grid-padding-end));
     justify-content: center;
     gap: 0;
 }
@@ -62,7 +96,6 @@
         width: 100%;
         height: 100%;
 
-
         border-radius: 15px;
         overflow: hidden;
 
@@ -79,8 +112,9 @@
         transform: rotateY(180deg);
 
         > img {
-            width: 90vmin;
-            height: 90vmin;
+            // Use --square-size since this should match the detail view
+            width: var(--square-size);
+            height: var(--square-size);
         }
     }
 
@@ -100,8 +134,8 @@
             .item--back > img {
                 transform:
                     translate(
-                        calc((30vmin + 1px/3) * (1 - $col)),
-                        calc((30vmin + 1px/3) * (1 - $row)));
+                        calc(var(--grid-item-size) * (1 - $col)),
+                        calc(var(--grid-item-size) * (1 - $row)));
             }
         }
     }
