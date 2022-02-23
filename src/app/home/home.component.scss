@@ -1,37 +1,91 @@
-:host {
-    width: 100vw;
-    height: 100vh;
+.root {
+    width: 90vw;
+    height: 90vh;
+
+    position: relative;
+
+    margin: 5vh 5vw;
 }
 
-.item-group {
-    // Center the div
+.detail-container {
+    width: 90vmin;
+    height: 90vmin;
+    > img {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.root > * {
+    // Center top-level elements and make them use absolute positioning
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
 
-    width: 100vmin;
-    height: 100vmin;
+.item-group {
+    // Fit the grid to the viewport
+    width: 90vmin;
+    height: 90vmin;
+
+    perspective: 1000px;
 
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr;
     justify-content: center;
-    gap: 1px;
+    gap: 0;
 }
 
 .item {
-    border-radius: 15px;
-    overflow: hidden;
+    transform-style: preserve-3d;
 
-    img {
+    width: 100%;
+    height: 100%;
+
+    &--inner {
+        position: relative;
+        transform-style: preserve-3d;
+    
+        width: 100%;
+        height: 100%;
+    }
+
+    &--front, &--back {
+        // Card contents are overlaid on top of each other
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        display: block;
+        width: 100%;
+        height: 100%;
+
+
+        border-radius: 15px;
+        overflow: hidden;
+
+        backface-visibility: hidden;
+    }
+
+    &--front > img {
         width: 100%;
         height: 100%;
         transition: transform 300ms ease-in-out;
     }
 
+    &--back {
+        transform: rotateY(180deg);
+
+        > img {
+            width: 90vmin;
+            height: 90vmin;
+        }
+    }
+
     &:hover {
-        img {
+        .item--front > img {
             transform: scale(1.5);
         }
     }
@@ -42,6 +96,13 @@
         .grid-cell-#{$row}-#{$col} {
             grid-row: $row;
             grid-column: $col;
+
+            .item--back > img {
+                transform:
+                    translate(
+                        calc((30vmin + 1px/3) * (1 - $col)),
+                        calc((30vmin + 1px/3) * (1 - $row)));
+            }
         }
     }
 }
