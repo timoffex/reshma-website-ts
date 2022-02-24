@@ -1,24 +1,25 @@
 <ng-container *unwrap="selectedItem$ | async; let selectedItem">
-    <div [@homePageState]="homePageState(selectedItem)" class="root">
-        <div @detail *ngIf="selectedItem" class="detail-container" (click)="this.goHome()">
-            <img class="detail-container--image" src="assets/stump.jpg" />
-        </div>
-        <div @grid *ngIf="!selectedItem" class="item-group" (@grid.start)="this.onGridAnimationStart()"
-            (@grid.done)="this.onGridAnimationEnd()">
-            <ng-container *ngFor="let row of [1, 2, 3]">
-                <ng-container *ngFor="let col of [1, 2, 3]">
-                    <div class="item grid-cell-{{row}}-{{col}}" (click)="this.selectItemAt(row, col)">
-                        <div class="item--inner">
-                            <div class="item--front">
-                                <img src="assets/stump_gallery.jpg" />
-                            </div>
-                            <div class="item--back">
-                                <img src="assets/stump.jpg" />
+    <ng-container *ngIf="ready$ | async">
+        <div [@homePageState]="homePageState(selectedItem)" class="root">
+            <div *ngIf="selectedItem" class="detail-container" (click)="goHome()">
+                <img class="detail-container--image" [src]="selectedItem.detailSrc" />
+            </div>
+            <div *ngIf="!selectedItem" class="item-group">
+                <ng-container *ngFor="let row of [1, 2, 3]">
+                    <ng-container *ngFor="let col of [1, 2, 3]">
+                        <div class="item grid-cell-{{row}}-{{col}}" (click)="selectItemAt(row, col)">
+                            <div class="item--inner">
+                                <div class="item--front">
+                                    <img [src]="gridItemAt(row, col)!.gridSrc" />
+                                </div>
+                                <div *ngIf="cardBacksideSrc$ | async as src" class="item--back">
+                                    <img [src]="src" />
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </ng-container>
                 </ng-container>
-            </ng-container>
+            </div>
         </div>
-    </div>
+    </ng-container>
 </ng-container>

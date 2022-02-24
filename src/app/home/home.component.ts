@@ -1,7 +1,9 @@
-import { animate, animateChild, group, query, stagger, state, style, transition, trigger } from '@angular/animations';
+import { query, style, transition, trigger, useAnimation } from '@angular/animations';
 import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouteReuseStrategy } from '@angular/router';
-import { BehaviorSubject, map, Observable, Subject } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
+import { BehaviorSubject, delay, map, Observable, tap } from 'rxjs';
+
+import { detailDisappearAnimation, gridCardsAppearAnimation, gridFlipCardsAnimation } from './animations';
 
 @Component({
   selector: 'app-home',
@@ -10,70 +12,72 @@ import { BehaviorSubject, map, Observable, Subject } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('homePageState', [
+      transition('void => Grid', [
+        query('.item-group', useAnimation(gridCardsAppearAnimation)),
+      ]),
       transition('Grid => Detail', [
-        query('@detail', style({ visibility: 'hidden' })),
-        query('@grid', animateChild()),
+        query('.detail-container', style({ visibility: 'hidden' })),
+        query('.item-group', useAnimation(gridFlipCardsAnimation)),
       ]),
       transition('Detail => Grid', [
-        query('@grid', style({ visibility: 'hidden' })),
-        query('@detail', animateChild()),
-        query('@grid', [
+        query('.item-group', style({ visibility: 'hidden' })),
+        query('.detail-container', useAnimation(detailDisappearAnimation)),
+        query('.item-group', [
           style({ visibility: 'visible' }),
-          animateChild(),
+          useAnimation(gridCardsAppearAnimation),
         ])
-      ]),
-    ]),
-    trigger('detail', [
-      transition(':leave', [
-        query('img', [
-          animate('500ms ease-in', style({
-            transform: 'translateY(-100%)',
-            opacity: 0,
-          }))
-        ])
-      ])
-    ]),
-    trigger('grid', [
-      transition(':enter', [
-        query('.item', [
-          style({ opacity: 0, transform: 'translateY(50%)' }),
-          stagger(100, [
-            animate('300ms')
-          ]),
-        ])
-      ]),
-      transition(':leave', [
-        query('.item', [
-          stagger(50,
-            animate('1s ease-in', style({
-              transform: 'rotateY(180deg)'
-            }))
-          ),
-        ]),
-        group([
-          query('.item--front, .item--back', [
-            animate('700ms ease-in', style({ borderRadius: 0 })),
-          ]),
-        ]),
       ]),
     ]),
   ]
 })
 export class HomeComponent implements OnInit {
-  constructor(private readonly router: Router,
+  constructor(
+    private readonly router: Router,
     private readonly activatedRoute: ActivatedRoute) { }
 
-  items = Array.from(Array(10), (_, i) => `item_${i}`);
-  selectedItem$: Observable<string> | undefined;
-  canClick: boolean = true;
+  /**
+   * Whether clicks on grid items should do anything.
+   * 
+   * This is used to prevent clicks during animations.
+   */
+  private canClick: boolean = true;
+
+  /**
+   * The src to use for the back-of-card image when transitioning to the detail view.
+   * 
+   * This runs immediately before `selectedItem$` changes so that the change is applied
+   * to the DOM before the animation starts (or else it is not applied).
+   */
+  cardBacksideSrc$: Observable<string | undefined> | undefined;
+
+  /** The selected item for the detail view, or undefined. */
+  selectedItem$: Observable<Item | undefined> | undefined;
+
+  /**
+   * Whether the page is ready to display.
+   * 
+   * This is set to true after query parameters have been parsed to avoid
+   * an unnecessary Grid=>Detail animation.
+   */
+  readonly ready$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   ngOnInit(): void {
-    this.selectedItem$ = this.activatedRoute.params.pipe(map((params) => params['detailid']));
+    const selectedItemBase$ = this.activatedRoute.params.pipe(map((params) => itemMap.get(params['detailid'])));
+
+    this.cardBacksideSrc$ = selectedItemBase$.pipe(map(item => item?.detailSrc));
+    this.selectedItem$ = selectedItemBase$.pipe(
+      // Hackaround to ensure cardBacksideSrc updates first
+      delay(0),
+      tap(() => this.ready$.next(true)));
+  }
+
+  gridItemAt(row: number, col: number): Item | undefined {
+    return itemMap.get(gridItemNames[(row - 1) * 3 + col - 1]);
   }
 
   selectItemAt(row: number, col: number): void {
     if (!this.canClick) return;
-    this.router.navigate(['home', 'xyz']);
+    this.router.navigate(['home', gridItemNames[(row - 1) * 3 + col - 1]]);
   }
 
   onGridAnimationStart(): void {
@@ -92,3 +96,19 @@ export class HomeComponent implements OnInit {
     return selectedItem ? 'Detail' : 'Grid';
   }
 }
+
+interface Item {
+  detailSrc: string;
+  gridSrc: string;
+}
+
+const gridItemNames: string[] = [
+  'frog', 'stump', 'honey',
+  'honey', 'frog', 'stump',
+  'stump', 'honey', 'frog',
+];
+const itemMap: Map<string, Item> = new Map([
+  ['frog', { detailSrc: 'assets/frog.jpg', gridSrc: 'assets/frog_gallery.jpg' }],
+  ['honey', { detailSrc: 'assets/honey.jpg', gridSrc: 'assets/honey_gallery.jpg' }],
+  ['stump', { detailSrc: 'assets/stump.jpg', gridSrc: 'assets/stump_gallery.jpg' }],
+]);
