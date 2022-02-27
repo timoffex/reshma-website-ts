@@ -61,8 +61,8 @@ export class HomeComponent implements OnInit {
   readonly ready$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   readonly gridItems: GridItem[] = gridItemNames.map((name, index) => {
-    const row = 1 + Math.floor(index / 3);
-    const col = 1 + index % 3;
+    const row = 1 + Math.floor(index / 2);
+    const col = 1 + index % 2;
 
     return {
       class: `grid-cell-${row}-${col}`,
@@ -113,13 +113,13 @@ interface GridItem {
 }
 
 const gridItemNames: string[] = [
-  'frog', 'stump', 'honey',
-  'honey', 'frog', 'stump',
-  'stump', 'honey', 'frog',
+  'frog', 'stump',
+  'honey', 'mushroom',
 ];
 
 const itemMap: Map<string, Item> = new Map([
   ['frog', { detailSrc: 'assets/frog.jpg', gridSrc: 'assets/frog_gallery.jpg' }],
   ['honey', { detailSrc: 'assets/honey.jpg', gridSrc: 'assets/honey_gallery.jpg' }],
   ['stump', { detailSrc: 'assets/stump.jpg', gridSrc: 'assets/stump_gallery.jpg' }],
+  ['mushroom', { detailSrc: 'assets/mushroom.jpg', gridSrc: 'assets/mushroom_gallery.jpg' }],
 ]);

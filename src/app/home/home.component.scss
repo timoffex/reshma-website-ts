@@ -11,28 +11,24 @@
     --square-size: 160px;
 
     // The size of a grid item, which is an integer number of pixels
-    --grid-item-size: calc((var(--square-size) - var(--grid-padding-end))/3);
+    --grid-item-size: calc((var(--square-size) - var(--grid-padding-end))/2);
 
     // The extra size to add to the grid elements at the right and bottom of the grid
-    // so that it perfectly overlaps the detail container
-    --grid-padding-end: 1px;
+    // so that it perfectly overlaps the detail container.
+    //
+    // For a 2x2 grid, this can just be 0px.
+    --grid-padding-end: 0px;
 
     @media screen and (min-width: 330px) and (min-height: 330px) {
         --square-size: 320px;
-        // Subtract 2 to get 318, which is a multiple of 3
-        --grid-padding-end: 2px;
     }
 
     @media screen and (min-width: 500px) and (min-height: 500px) {
         --square-size: 480px;
-        // This is already a multiple of 3, no need to set grid padding
-        --grid-padding-end: 0px;
     }
 
     @media screen and (min-width: 650px) and (min-height: 650px) {
         --square-size: 640px;
-        // Subtract 1 to get 639, which is a multiple of 3
-        --grid-padding-end: 1px;
     }
 }
 
@@ -62,10 +58,8 @@
     display: grid;
     grid-template-columns:
         var(--grid-item-size)
-        var(--grid-item-size)
         calc(var(--grid-item-size) + var(--grid-padding-end));
     grid-template-rows:
-        var(--grid-item-size)
         var(--grid-item-size)
         calc(var(--grid-item-size) + var(--grid-padding-end));
     justify-content: center;
@@ -125,8 +119,8 @@
     }
 }
 
-@for $row from 1 through 3 {
-    @for $col from 1 through 3 {
+@for $row from 1 through 2 {
+    @for $col from 1 through 2 {
         .grid-cell-#{$row}-#{$col} {
             grid-row: $row;
             grid-column: $col;
