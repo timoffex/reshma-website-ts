@@ -4,16 +4,18 @@ import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { CardGridComponent } from './card-grid/card-grid.component';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     CardGridComponent,
+    HomeComponent,
   ],
   imports: [
     BrowserAnimationsModule,
     RouterModule.forRoot([
-      { path: '', component: CardGridComponent },
+      { path: '', component: HomeComponent },
     ])
   ],
   providers: [],
