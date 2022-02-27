@@ -22,13 +22,3 @@ export const gridCardsAppearAnimation = animation([
         ]),
     ])
 ]);
-
-/** Makes the detail square slide up and fade out. */
-export const detailDisappearAnimation = animation([
-    query('img', [
-        animate('500ms ease-in', style({
-            transform: 'translateY(-100%)',
-            opacity: 0,
-        }))
-    ])
-])

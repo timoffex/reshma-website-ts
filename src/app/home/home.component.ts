@@ -1,9 +1,9 @@
 import { query, style, transition, trigger, useAnimation } from '@angular/animations';
-import { Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, delay, map, Observable, tap } from 'rxjs';
 
-import { detailDisappearAnimation, gridCardsAppearAnimation, gridFlipCardsAnimation } from './animations';
+import { gridCardsAppearAnimation, gridFlipCardsAnimation } from './animations';
 
 @Component({
   selector: 'app-home',
@@ -21,7 +21,6 @@ import { detailDisappearAnimation, gridCardsAppearAnimation, gridFlipCardsAnimat
       ]),
       transition('Detail => Grid', [
         query('.item-group', style({ visibility: 'hidden' })),
-        query('.detail-container', useAnimation(detailDisappearAnimation)),
         query('.item-group', [
           style({ visibility: 'visible' }),
           useAnimation(gridCardsAppearAnimation),
