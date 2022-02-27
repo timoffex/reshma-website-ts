@@ -1,19 +1,19 @@
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterModule, UrlMatchResult, UrlSegment } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
-import { HomeComponent } from './home/home.component';
+import { CardGridComponent } from './card-grid/card-grid.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
+    CardGridComponent,
   ],
   imports: [
     BrowserAnimationsModule,
     RouterModule.forRoot([
-      { path: '', component: HomeComponent },
+      { path: '', component: CardGridComponent },
     ])
   ],
   providers: [],

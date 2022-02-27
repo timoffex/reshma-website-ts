@@ -5,9 +5,9 @@ import { BehaviorSubject, delay, map, Observable, tap } from 'rxjs';
 import { gridCardsAppearAnimation, gridFlipCardsAnimation } from './animations';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
+  selector: 'app-card-grid',
+  templateUrl: './card-grid.component.html',
+  styleUrls: ['./card-grid.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('homePageState', [
@@ -28,7 +28,7 @@ import { gridCardsAppearAnimation, gridFlipCardsAnimation } from './animations';
     ]),
   ]
 })
-export class HomeComponent implements OnInit {
+export class CardGridComponent implements OnInit {
   /**
    * Whether clicks on grid items should do anything.
    * 
