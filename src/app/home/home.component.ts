@@ -1,6 +1,5 @@
 import { query, style, transition, trigger, useAnimation } from '@angular/animations';
 import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, delay, map, Observable, tap } from 'rxjs';
 
 import { gridCardsAppearAnimation, gridFlipCardsAnimation } from './animations';
@@ -30,16 +29,15 @@ import { gridCardsAppearAnimation, gridFlipCardsAnimation } from './animations';
   ]
 })
 export class HomeComponent implements OnInit {
-  constructor(
-    private readonly router: Router,
-    private readonly activatedRoute: ActivatedRoute) { }
-
   /**
    * Whether clicks on grid items should do anything.
    * 
    * This is used to prevent clicks during animations.
    */
   private canClick: boolean = true;
+
+  private _selectedItem$: BehaviorSubject<Item | undefined> =
+      new BehaviorSubject<Item | undefined>(undefined);
 
   /**
    * The src to use for the back-of-card image when transitioning to the detail view.
@@ -69,16 +67,14 @@ export class HomeComponent implements OnInit {
       imageSrc: itemMap.get(name)!.gridSrc,
       select: () => {
         if (!this.canClick) return;
-        this.router.navigate(['home', name]);
+        this._selectedItem$.next(itemMap.get(name)!);
       },
     };
   });
 
   ngOnInit(): void {
-    const selectedItemBase$ = this.activatedRoute.params.pipe(map((params) => itemMap.get(params['detailid'])));
-
-    this.cardBacksideSrc$ = selectedItemBase$.pipe(map(item => item?.detailSrc));
-    this.selectedItem$ = selectedItemBase$.pipe(
+    this.cardBacksideSrc$ = this._selectedItem$.pipe(map(item => item?.detailSrc));
+    this.selectedItem$ = this._selectedItem$.pipe(
       // Hackaround to ensure cardBacksideSrc updates first
       delay(0),
       tap(() => { if (!this.ready$.value) this.ready$.next(true); }));
@@ -93,7 +89,7 @@ export class HomeComponent implements OnInit {
   }
 
   goHome(): void {
-    this.router.navigate(['home']);
+    this._selectedItem$.next(undefined);
   }
 
   homePageState(selectedItem: Item | null | undefined): string {
