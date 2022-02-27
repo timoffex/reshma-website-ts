@@ -4,13 +4,11 @@ import { RouterModule, UrlMatchResult, UrlSegment } from '@angular/router';
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
-import { UnwrapDirective } from './unwrap.directive';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    UnwrapDirective,
   ],
   imports: [
     BrowserAnimationsModule,

@@ -1,25 +1,24 @@
-<ng-container *unwrap="selectedItem$ | async; let selectedItem">
-    <ng-container *ngIf="ready$ | async">
-        <div [@homePageState]="homePageState(selectedItem)" class="root">
-            <div *ngIf="selectedItem" class="detail-container" (click)="goHome()">
-                <img class="detail-container--image" [src]="selectedItem.detailSrc" />
-            </div>
-            <div *ngIf="!selectedItem" class="item-group">
-                <ng-container *ngFor="let row of [1, 2, 3]">
-                    <ng-container *ngFor="let col of [1, 2, 3]">
-                        <div class="item grid-cell-{{row}}-{{col}}" (click)="selectItemAt(row, col)">
-                            <div class="item--inner">
-                                <div class="item--front">
-                                    <img [src]="gridItemAt(row, col)!.gridSrc" />
-                                </div>
-                                <div *ngIf="cardBacksideSrc$ | async as src" class="item--back">
-                                    <img [src]="src" />
-                                </div>
-                            </div>
-                        </div>
-                    </ng-container>
-                </ng-container>
-            </div>
+<ng-container *ngIf="{ item: selectedItem$ | async } as obs">
+    <div *ngIf="ready$ | async" [@homePageState]="homePageState(obs.item)" class="root">
+        <!-- Detail view -->
+        <div *ngIf="obs.item" class="detail-container" (click)="goHome()">
+            <img class="detail-container--image" [src]="obs.item.detailSrc" />
         </div>
-    </ng-container>
+
+        <!-- 3x3 grid view -->
+        <div *ngIf="!obs.item" class="item-group">
+            <ng-container *ngFor="let item of gridItems">
+                <div class="item {{item.class}}" (click)="item.select()">
+                    <div class="item--inner">
+                        <div class="item--front">
+                            <img [src]="item.imageSrc" />
+                        </div>
+                        <div *ngIf="cardBacksideSrc$ | async as src" class="item--back">
+                            <img [src]="src" />
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
 </ng-container>

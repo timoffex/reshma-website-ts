@@ -1,5 +1,5 @@
 import { query, style, transition, trigger, useAnimation } from '@angular/animations';
-import { Component, ChangeDetectionStrategy, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, delay, map, Observable, tap } from 'rxjs';
 
@@ -61,6 +61,20 @@ export class HomeComponent implements OnInit {
    */
   readonly ready$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
+  readonly gridItems: GridItem[] = gridItemNames.map((name, index) => {
+    const row = 1 + Math.floor(index / 3);
+    const col = 1 + index % 3;
+
+    return {
+      class: `grid-cell-${row}-${col}`,
+      imageSrc: itemMap.get(name)!.gridSrc,
+      select: () => {
+        if (!this.canClick) return;
+        this.router.navigate(['home', name]);
+      },
+    };
+  });
+
   ngOnInit(): void {
     const selectedItemBase$ = this.activatedRoute.params.pipe(map((params) => itemMap.get(params['detailid'])));
 
@@ -68,16 +82,7 @@ export class HomeComponent implements OnInit {
     this.selectedItem$ = selectedItemBase$.pipe(
       // Hackaround to ensure cardBacksideSrc updates first
       delay(0),
-      tap(() => this.ready$.next(true)));
-  }
-
-  gridItemAt(row: number, col: number): Item | undefined {
-    return itemMap.get(gridItemNames[(row - 1) * 3 + col - 1]);
-  }
-
-  selectItemAt(row: number, col: number): void {
-    if (!this.canClick) return;
-    this.router.navigate(['home', gridItemNames[(row - 1) * 3 + col - 1]]);
+      tap(() => { if (!this.ready$.value) this.ready$.next(true); }));
   }
 
   onGridAnimationStart(): void {
@@ -92,7 +97,7 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['home']);
   }
 
-  homePageState(selectedItem: string): string {
+  homePageState(selectedItem: Item | null | undefined): string {
     return selectedItem ? 'Detail' : 'Grid';
   }
 }
@@ -102,11 +107,18 @@ interface Item {
   gridSrc: string;
 }
 
+interface GridItem {
+  class: string;
+  imageSrc: string;
+  select: () => void;
+}
+
 const gridItemNames: string[] = [
   'frog', 'stump', 'honey',
   'honey', 'frog', 'stump',
   'stump', 'honey', 'frog',
 ];
+
 const itemMap: Map<string, Item> = new Map([
   ['frog', { detailSrc: 'assets/frog.jpg', gridSrc: 'assets/frog_gallery.jpg' }],
   ['honey', { detailSrc: 'assets/honey.jpg', gridSrc: 'assets/honey_gallery.jpg' }],
